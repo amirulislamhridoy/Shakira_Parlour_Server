@@ -21,6 +21,23 @@ const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology:
 //     // client.close();
 //   });
 
+function verifyJWT(req, res, next){
+  const authHeader = req.headers.authorization
+  if(!authHeader){
+    return res.status(401).send({message: 'Unauthorized'})
+  }
+  const token = authHeader.split(" ")[1]
+  jwt.verify(token, process.env.Private_key, function(err, decoded){
+    if(err){
+      return res.status(403).send({message: "Forbidden"})
+    }
+    if(decoded){
+      req.decoded = decoded
+      next()
+    }
+  })
+}
+
 async function run(){
     // await client.connect(
     try{
@@ -31,8 +48,9 @@ async function run(){
             const result = await serviceCollection.find().toArray()
             res.send(result)
         })
-        app.get('/service/:id', async (req, res) => {
+        app.get('/service/:id', verifyJWT, async (req, res) => {
           const id = req.params.id
+          const decoded = req. decoded;
           const query = {_id: ObjectId(id)}
             const result = await serviceCollection.findOne(query)
             res.send(result)
