@@ -56,6 +56,12 @@ async function run(){
             res.send(result)
         })
 
+        app.post('/order', async (req, res) => {
+          const service = req.body
+          const result = await orderCollection.insertOne(service)
+          console.log(result)
+          res.send(result)
+        })
         app.post('/login/:id', async (req, res) => {
           const id = req.params.id
           const email = req.body.email
