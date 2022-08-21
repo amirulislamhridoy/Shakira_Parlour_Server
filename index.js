@@ -50,7 +50,6 @@ async function run(){
         })
         app.get('/service/:id', verifyJWT, async (req, res) => {
           const id = req.params.id
-          const decoded = req. decoded;
           const query = {_id: ObjectId(id)}
             const result = await serviceCollection.findOne(query)
             res.send(result)
@@ -70,6 +69,11 @@ async function run(){
           const email = req.body.email
           const token = jwt.sign({ email }, process.env.Private_key, { expiresIn: '1h' });
           res.send({token})
+        })
+        app.post('/addService', async (req, res) => {
+          const data = req.body
+          const result = await serviceCollection.insertOne(data)
+          res.send(result)
         })
     }finally{
         // await client.close();
