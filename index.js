@@ -55,9 +55,15 @@ async function run(){
             const result = await serviceCollection.findOne(query)
             res.send(result)
         })
-        app.get('/order', async (req, res) => {
+        app.get('/order', verifyJWT, async (req, res) => {
           const result = await orderCollection.find().toArray()
           res.send(result)
+        })
+        app.get('/admin', async (req, res) => {
+          const email = req.query.email
+          const result = await userCollection.findOne({email})
+          const admin = result.role === 'admin'
+          res.json(admin)
         })
 
         app.post('/order', async (req, res) => {
