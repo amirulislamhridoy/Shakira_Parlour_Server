@@ -55,6 +55,10 @@ async function run(){
             const result = await serviceCollection.findOne(query)
             res.send(result)
         })
+        app.get('/serviceOnly', async (req, res) => {
+          const result = await serviceCollection.find().project({name: 1}).toArray()
+          res.send(result)
+        })
         app.get('/order', verifyJWT, async (req, res) => {
           const result = await orderCollection.find().toArray()
           res.send(result)
@@ -62,8 +66,13 @@ async function run(){
         app.get('/admin', async (req, res) => {
           const email = req.query.email
           const result = await userCollection.findOne({email})
-          const admin = result.role === 'admin'
+          const admin = result?.role === 'admin'
           res.json(admin)
+        })
+        app.get('/bookingList', async (req, res) => {
+          const email = req.query.email
+          const result = await orderCollection.find({email}).toArray()
+          res.send(result)
         })
 
         app.post('/order', async (req, res) => {
