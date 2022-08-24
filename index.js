@@ -81,7 +81,8 @@ async function run() {
     });
     app.get("/willBook", async (req, res) => {
       const email = req.query.email;
-      const fastResult = await orderCollection.find({ email }).toArray();
+      const date = req.query.date
+      const fastResult = await orderCollection.find({ email, date }).toArray();
       const result = await fastResult.filter(r => r.payment === 'pay')
       res.send(result);
     });
@@ -152,7 +153,8 @@ async function run() {
     });
     app.patch('/payment', async (req, res) => {
       const data = req.body
-      const filter = {email: data.email, serviceName: data.serviceName}
+      const date = req.body.date
+      const filter = {email: data.email, serviceName: data.serviceName, date}
       const updateDoc = {
         $set: {
           transactionId: data.transactionId,
