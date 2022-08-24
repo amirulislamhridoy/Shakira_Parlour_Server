@@ -46,11 +46,10 @@ function verifyJWT(req, res, next) {
 async function run() {
   // await client.connect(
   try {
-    const serviceCollection = client
-      .db("Shakira_Parlour")
-      .collection("services");
+    const serviceCollection = client.db("Shakira_Parlour").collection("services");
     const orderCollection = client.db("Shakira_Parlour").collection("orders");
     const userCollection = client.db("Shakira_Parlour").collection("users");
+    const reviewCollection = client.db("Shakira_Parlour").collection("reviews");
 
     app.get("/service", async (req, res) => {
       const result = await serviceCollection.find().toArray();
@@ -75,7 +74,6 @@ async function run() {
     app.get("/bookingList", async (req, res) => {
       const email = req.query.email;
       const date = req.query.date
-      console.log(email, date)
       const result = await orderCollection.find({ email, date }).toArray();
       res.send(result);
     });
@@ -86,6 +84,11 @@ async function run() {
       const result = await fastResult.filter(r => r.payment === 'pay')
       res.send(result);
     });
+    app.get('/allTestimonial', async (req, res) => {
+      const result = await reviewCollection.find().toArray()
+      const reverse = result.reverse()
+      res.send(reverse)
+    })
 
     app.post("/order", async (req, res) => {
       const service = req.body;
@@ -123,6 +126,11 @@ async function run() {
         });
       }
     });
+    app.post('/addReview', async (req, res) => {
+      const data = req.body
+      const result = await reviewCollection.insertOne(data)
+      res.send(result)
+    })
 
     app.put("/login/:email", async (req, res) => {
       const email = req.params.email;
