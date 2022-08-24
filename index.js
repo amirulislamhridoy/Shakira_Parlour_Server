@@ -89,6 +89,10 @@ async function run() {
       const reverse = result.reverse()
       res.send(reverse)
     })
+    app.get('/manageServices', async (req, res) => {
+      const result = await serviceCollection.find().toArray()
+      res.send(result)
+    })
 
     app.post("/order", async (req, res) => {
       const service = req.body;
