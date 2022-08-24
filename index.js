@@ -74,7 +74,9 @@ async function run() {
     });
     app.get("/bookingList", async (req, res) => {
       const email = req.query.email;
-      const result = await orderCollection.find({ email }).toArray();
+      const date = req.query.date
+      console.log(email, date)
+      const result = await orderCollection.find({ email, date }).toArray();
       res.send(result);
     });
     app.get("/willBook", async (req, res) => {
@@ -86,6 +88,13 @@ async function run() {
 
     app.post("/order", async (req, res) => {
       const service = req.body;
+      const email = service.email
+      const date = service.date
+      const serviceName = service.serviceName
+      const existed = await orderCollection.findOne({email, date, serviceName})
+      if(existed){
+        return res.send({message: `You are already set ${existed.date} in ${existed.serviceName} service`})
+      }
       const result = await orderCollection.insertOne(service);
       res.send(result);
     });
@@ -139,7 +148,6 @@ async function run() {
         },
       };
       const result = await userCollection.updateOne(filter, updateDoc);
-      console.log(result);
       res.send(result);
     });
     app.patch('/payment', async (req, res) => {
